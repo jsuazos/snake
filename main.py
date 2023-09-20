@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+from time import time
 
 def convert_pos_to_pixel(cell):
     tl = cell[0] * CELL_SIZE, cell[1] * CELL_SIZE
@@ -28,21 +29,32 @@ layout = [[field]]
 
 window = sg.Window('Snake', layout, return_keyboard_events = True)
 
+start_time = time()
 while True:
     event, values = window.read(timeout = 10)
 
     if event == sg.WIN_CLOSED: break
-    if event == 'Left:37': print('left')
-    if event == 'Up:38': print('up')
-    if event == 'Right:39': print('right')
-    if event == 'Down:40': print('down')
+    if event == 'Left:37': direction = DIRECTIONS['left']
+    if event == 'Up:38': direction = DIRECTIONS['up']
+    if event == 'Right:39': direction = DIRECTIONS['right']
+    if event == 'Down:40': direction = DIRECTIONS['down']
 
-    tl, br = convert_pos_to_pixel(apple_pos)
-    field.DrawRectangle(tl, br, 'red')
+    time_since_start = time() - start_time
+    if time_since_start >= 0.5:
+        start_time = time()
 
-    for index, part in enumerate(snake_body):
-        tl, br = convert_pos_to_pixel(part)
-        color = 'yellow' if index == 0 else 'green'
-        field.DrawRectangle(tl, br, color)
+        new_head = (snake_body[0][0] + direction[0], snake_body[0][1] + direction[1])
+        snake_body.insert(0, new_head)
+        snake_body.pop()
+ 
+        field.DrawRectangle((0, 0), (FIELD_SIZE, FIELD_SIZE), 'black')
+
+        tl, br = convert_pos_to_pixel(apple_pos)
+        field.DrawRectangle(tl, br, 'red')
+
+        for index, part in enumerate(snake_body):
+            tl, br = convert_pos_to_pixel(part)
+            color = 'yellow' if index == 0 else 'green'
+            field.DrawRectangle(tl, br, color)
 
 window.close()

@@ -9,6 +9,9 @@ FIELD_SIZE = 400
 CELL_NUM = 10
 CELL_SIZE = FIELD_SIZE / CELL_NUM
 
+snake_body = [(4,4),(3,4),(2,4)]
+DIRECTIONS = {'left': (-1,0),'right': (1,0), 'up':(0,1), 'down':(0,-1)}
+direction = DIRECTIONS['up']
 
 apple_pos = (0, 0)
 
@@ -37,5 +40,8 @@ while True:
     tl, br = convert_pos_to_pixel(apple_pos)
     field.DrawRectangle(tl, br, 'red')
 
+    for part in snake_body:
+        tl, br = convert_pos_to_pixel(part)
+        field.DrawRectangle(tl, br, 'green')
 
 window.close()

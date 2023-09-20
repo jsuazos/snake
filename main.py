@@ -40,8 +40,9 @@ while True:
     tl, br = convert_pos_to_pixel(apple_pos)
     field.DrawRectangle(tl, br, 'red')
 
-    for part in snake_body:
+    for index, part in enumerate(snake_body):
         tl, br = convert_pos_to_pixel(part)
-        field.DrawRectangle(tl, br, 'green')
+        color = 'yellow' if index == 0 else 'green'
+        field.DrawRectangle(tl, br, color)
 
 window.close()

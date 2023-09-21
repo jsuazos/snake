@@ -1,10 +1,17 @@
 import PySimpleGUI as sg
 from time import time
+from random import randint
 
 def convert_pos_to_pixel(cell):
     tl = cell[0] * CELL_SIZE, cell[1] * CELL_SIZE
     br = tl[0] + CELL_SIZE, tl[1] + CELL_SIZE
     return tl, br
+
+def place_apple():
+    apple_pos = randint(0, CELL_NUM - 1), randint(0, CELL_NUM - 1)
+    while apple_pos in snake_body:
+        apple_pos = randint(0, CELL_NUM - 1), randint(0, CELL_NUM - 1)
+    return apple_pos
 
 FIELD_SIZE = 400
 CELL_NUM = 10
@@ -14,7 +21,8 @@ snake_body = [(4,4),(3,4),(2,4)]
 DIRECTIONS = {'left': (-1,0),'right': (1,0), 'up':(0,1), 'down':(0,-1)}
 direction = DIRECTIONS['up']
 
-apple_pos = (0, 0)
+apple_pos = place_apple()
+apple_eaten = False
 
 sg.theme('Green')
 field = sg.Graph(
@@ -43,9 +51,20 @@ while True:
     if time_since_start >= 0.5:
         start_time = time()
 
+        if snake_body[0] == apple_pos:
+            apple_pos = place_apple()
+            apple_eaten = True
+
         new_head = (snake_body[0][0] + direction[0], snake_body[0][1] + direction[1])
         snake_body.insert(0, new_head)
-        snake_body.pop()
+        if not apple_eaten:
+            snake_body.pop()
+        apple_eaten = False
+
+        if  not 0 <= snake_body[0][0] <= CELL_NUM - 1 or \
+            not 0 <= snake_body[0][1] <= CELL_NUM - 1 or \
+            snake_body[0] in snake_body[1:]:
+            break
  
         field.DrawRectangle((0, 0), (FIELD_SIZE, FIELD_SIZE), 'black')
 
